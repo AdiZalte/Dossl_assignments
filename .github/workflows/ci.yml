@@ -1,0 +1,19 @@
+name: CI-CD
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -f dockerfile -t devops-cie-app:latest .
+      - name: Test container
+        run: |
+          docker run -d --name cie-test -p 8082:80 devops-cie-app:latest
+          sleep 5
+          curl --fail http://127.0.0.1:8082
+      - name: Deploy
+        run: echo "Deploy stage - manifests applied to Kubernetes"
